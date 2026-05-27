@@ -1,4 +1,4 @@
-const CACHE = 'speedapp-v5';
+const CACHE = 'speedapp-v6';
 // Relative URLs so the SW works at any base path (localhost / GitHub Pages /speed_app/)
 const PRECACHE = [
   './',
