@@ -19,8 +19,7 @@
       <video id="camera-video" autoplay playsinline muted></video>
       <canvas id="sim-canvas" class="hidden"></canvas>
       <canvas id="capture-overlay"></canvas>
-      <div id="mode-badge" data-mode="side">SIDE</div>
-      <div id="sim-badge" data-sim="off">SIM OFF</div>
+      <button id="settings-btn">⚙</button>
     </div>
     <div id="capture-controls">
       <button id="measure-btn">&#9654; MEASURE SPEED</button>
@@ -45,6 +44,40 @@
     <span id="speed-number">0</span>
     <span id="mph-label">mph</span>
     <button id="new-btn">&#10227; NEW</button>
+  </div>
+
+  <!-- Settings modal -->
+  <div id="settings-modal" class="hidden">
+    <div id="settings-scrim"></div>
+    <div id="settings-card">
+      <div id="settings-header">
+        <span>SETTINGS</span>
+        <button id="settings-close">✕</button>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">MODE</span>
+        <div id="mode-toggle">
+          <button id="mode-side" class="active">SIDE</button>
+          <button id="mode-front">FRONT</button>
+        </div>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">SIMULATION</span>
+        <button id="sim-toggle" data-on="false"></button>
+      </div>
+      <hr class="settings-divider">
+      <div id="settings-about">
+        <span class="settings-label">ABOUT</span>
+        <div class="settings-row">
+          <span class="settings-about-key">Version</span>
+          <span id="app-version"></span>
+        </div>
+        <div id="settings-url-row">
+          <span id="app-url">https://alpiepho.github.io/speed_app/</span>
+          <button id="copy-url-btn">Copy</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
