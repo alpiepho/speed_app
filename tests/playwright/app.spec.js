@@ -250,3 +250,42 @@ test('SimulationMode draws a moving rectangle on canvas', async ({ page }) => {
   });
   expect(moved).toBe(true);
 });
+
+test('settings: duration slider updates label', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#settings-btn').tap();
+  await expect(page.locator('#duration-label')).toHaveText('5s');
+  await page.evaluate(() => {
+    const s = document.getElementById('duration-slider');
+    s.value = '8';
+    s.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await expect(page.locator('#duration-label')).toHaveText('8s');
+});
+
+test('countdown displays during measurement', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
+  await page.locator('#measure-btn').tap();
+  await expect(page.locator('#tracking-screen')).toBeVisible();
+  await page.waitForTimeout(500);
+  const text = await page.locator('#countdown').textContent();
+  expect(parseInt(text)).toBeGreaterThan(0);
+});
+
+test('auto-stop after duration shows result screen', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#settings-btn').tap();
+  await page.evaluate(() => {
+    const s = document.getElementById('duration-slider');
+    s.value = '3';
+    s.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
+  await page.locator('#measure-btn').tap();
+  await expect(page.locator('#tracking-screen')).toBeVisible();
+  await expect(page.locator('#result-screen')).toBeVisible({ timeout: 8000 });
+});
