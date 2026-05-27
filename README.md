@@ -26,6 +26,21 @@ A PWA that uses your phone camera and on-device ML to measure the speed of passi
 - [Playwright](https://playwright.dev) for end-to-end testing
 - PWA service worker for offline caching
 
+## GitHub Pages
+
+The app deploys automatically to GitHub Pages on every push to `main`.
+
+**One-time setup** (do this once in the GitHub repo settings):
+
+1. Go to **Settings → Pages**
+2. Under *Source*, choose **GitHub Actions**
+3. Save
+
+After that, every push to `main` triggers the workflow and the app is live at:
+`https://alpiepho.github.io/speed_app/`
+
+> Camera access on iOS still requires the user to grant permission in Safari — the HTTPS requirement is satisfied by GitHub Pages' certificate, so no local cert setup is needed when using the hosted version.
+
 ## Development
 
 ### Prerequisites

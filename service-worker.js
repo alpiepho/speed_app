@@ -1,17 +1,18 @@
-const CACHE = 'speedapp-v3';
+const CACHE = 'speedapp-v4';
+// Relative URLs so the SW works at any base path (localhost / GitHub Pages /speed_app/)
 const PRECACHE = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon.svg',
-  '/css/app.css',
-  '/css/result.css',
-  '/js/app.js',
-  '/js/camera.js',
-  '/js/simulation.js',
-  '/js/detector.js',
-  '/js/tracker.js',
-  '/js/speed.js',
+  './',
+  './index.html',
+  './manifest.json',
+  './icon.svg',
+  './css/app.css',
+  './css/result.css',
+  './js/app.js',
+  './js/camera.js',
+  './js/simulation.js',
+  './js/detector.js',
+  './js/tracker.js',
+  './js/speed.js',
   'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js',
   'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js',
 ];
