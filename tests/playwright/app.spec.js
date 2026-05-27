@@ -151,6 +151,21 @@ test('sim canvas becomes visible when SIM ON', async ({ page }) => {
   await expect(page.locator('#sim-badge')).toHaveAttribute('data-sim', 'on');
 });
 
+test('SIM ON shows sim canvas, hides video', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#sim-badge').tap();
+  await expect(page.locator('#sim-canvas')).toBeVisible();
+  await expect(page.locator('#camera-video')).toBeHidden();
+});
+
+test('MEASURE SPEED button navigates to tracking screen', async ({ page }) => {
+  await page.goto('/');
+  await page.locator('#sim-badge').tap();
+  await page.locator('#measure-btn').tap();
+  await expect(page.locator('#tracking-screen')).toBeVisible();
+  await expect(page.locator('#capture-screen')).toBeHidden();
+});
+
 test('Detector loads COCO-SSD model', async ({ page }) => {
   await page.goto('/');
   const loaded = await page.evaluate(async () => {
