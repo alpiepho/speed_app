@@ -19,3 +19,35 @@ test('icon SVG is reachable', async ({ page }) => {
   const body = await resp.text();
   expect(body).toContain('55');
 });
+
+test('loads with capture screen visible', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#capture-screen')).toBeVisible();
+  await expect(page.locator('#tracking-screen')).toBeHidden();
+  await expect(page.locator('#result-screen')).toBeHidden();
+});
+
+test('showScreen() switches screens', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => window._showScreen('tracking-screen'));
+  await expect(page.locator('#tracking-screen')).toBeVisible();
+  await expect(page.locator('#capture-screen')).toBeHidden();
+});
+
+test('mode badge toggles SIDE / FRONT on tap', async ({ page }) => {
+  await page.goto('/');
+  const badge = page.locator('#mode-badge');
+  await expect(badge).toHaveText('SIDE');
+  await badge.tap();
+  await expect(badge).toHaveText('FRONT');
+  await badge.tap();
+  await expect(badge).toHaveText('SIDE');
+});
+
+test('sim badge toggles SIM OFF / SIM ON on tap', async ({ page }) => {
+  await page.goto('/');
+  const badge = page.locator('#sim-badge');
+  await expect(badge).toHaveText('SIM OFF');
+  await badge.tap();
+  await expect(badge).toHaveText('SIM ON');
+});
