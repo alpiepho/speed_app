@@ -4,6 +4,8 @@ A PWA that uses your phone camera and on-device ML to measure the speed of passi
 
 **Live app:** https://alpiepho.github.io/speed_app/
 
+To install on iPhone: open the link in Safari, tap the **Share** button (⬆ box-with-arrow in the toolbar), scroll down in the sheet, and tap **Add to Home Screen**. If the option is missing, tap **Edit Actions** at the bottom of the sheet and add it.
+
 ## Features
 
 - **Side mode** — car passes left to right; tracks horizontal motion across frames
