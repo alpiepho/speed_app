@@ -237,6 +237,16 @@ test('Detector class has required interface', async ({ page }) => {
   expect(result.startedUnloaded).toBe(true);
 });
 
+test('service worker is registered', async ({ page }) => {
+  await page.goto('/');
+  const swRegistered = await page.evaluate(async () => {
+    if (!('serviceWorker' in navigator)) return false;
+    const reg = await navigator.serviceWorker.ready;
+    return !!reg.active;
+  });
+  expect(swRegistered).toBe(true);
+});
+
 test('SimulationMode draws a moving rectangle on canvas', async ({ page }) => {
   await page.goto('/');
   const moved = await page.evaluate(async () => {
