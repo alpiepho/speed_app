@@ -99,3 +99,46 @@ test('calcFrontSpeed converts size growth to mph', async ({ page }) => {
   expect(result).toBeGreaterThan(80);
   expect(result).toBeLessThan(100);
 });
+
+test('iou returns 1.0 for identical boxes', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { iou } = await import('/js/tracker.js');
+    return iou([10, 10, 50, 50], [10, 10, 50, 50]);
+  });
+  expect(result).toBeCloseTo(1.0);
+});
+
+test('iou returns 0 for non-overlapping boxes', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { iou } = await import('/js/tracker.js');
+    return iou([0, 0, 10, 10], [20, 20, 10, 10]);
+  });
+  expect(result).toBe(0);
+});
+
+test('Tracker locks onto largest detection', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { Tracker } = await import('/js/tracker.js');
+    const t = new Tracker();
+    const detections = [
+      { bbox: [10, 10, 30, 30], score: 0.9, class: 'car' },
+      { bbox: [100, 100, 80, 60], score: 0.85, class: 'car' },
+    ];
+    const locked = t.update(detections);
+    return locked.bbox;
+  });
+  expect(result).toEqual([100, 100, 80, 60]);
+});
+
+test('Tracker returns null when no detections', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { Tracker } = await import('/js/tracker.js');
+    const t = new Tracker();
+    return t.update([]);
+  });
+  expect(result).toBeNull();
+});
