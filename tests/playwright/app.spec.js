@@ -151,6 +151,17 @@ test('sim canvas becomes visible when SIM ON', async ({ page }) => {
   await expect(page.locator('#sim-badge')).toHaveAttribute('data-sim', 'on');
 });
 
+test('Detector loads COCO-SSD model', async ({ page }) => {
+  await page.goto('/');
+  const loaded = await page.evaluate(async () => {
+    const { Detector } = await import('/js/detector.js');
+    const d = new Detector();
+    await d.load();
+    return d.isLoaded();
+  });
+  expect(loaded).toBe(true);
+}, { timeout: 60_000 });
+
 test('SimulationMode draws a moving rectangle on canvas', async ({ page }) => {
   await page.goto('/');
   const moved = await page.evaluate(async () => {
