@@ -67,21 +67,29 @@ All tests run against a local server at port 3000. The Playwright config uses an
 brew install mkcert
 mkcert -install
 
-# Generate a local certificate (one-time per machine)
-mkcert localhost
+# Generate a local certificate valid for localhost and LAN IP (one-time per machine)
+mkcert -key-file localhost-key.pem -cert-file localhost.pem localhost 127.0.0.1 ::1
 
 # Serve with HTTPS
 npx serve . -p 3000 --ssl-cert localhost.pem --ssl-key localhost-key.pem
 ```
 
-Then on your iPhone:
+**Trust the certificate on your iPhone** (one-time per device):
 
-1. Find your Mac's local IP address: `ipconfig getifaddr en0`
+1. AirDrop `$(mkcert -CAROOT)/rootCA.pem` from your Mac to your iPhone and tap Accept
+2. On iPhone: **Settings → General → VPN & Device Management** → tap the downloaded profile → **Install**
+3. **Settings → General → About → Certificate Trust Settings** → enable full trust for the mkcert certificate
+
+> Step 3 is required — installing the profile alone is not enough.
+
+Then open the app:
+
+1. Find your Mac's local IP: `ipconfig getifaddr en0`
 2. Open `https://<your-mac-ip>:3000` in Safari
 3. Tap **Share → Add to Home Screen** to install as a PWA
-4. Open the app from your home screen for the full-screen experience
+4. Open from your home screen for the full-screen experience
 
-> The `*.pem` certificate files are git-ignored. Re-run `mkcert localhost` if you switch machines.
+> The `*.pem` certificate files are git-ignored. Re-run the `mkcert` command above if you switch machines.
 
 ## Project Structure
 
