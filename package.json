@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "npx serve . -p 3000 --no-clipboard",
-    "test": "npx playwright test",
-    "test:ui": "npx playwright test --ui"
+    "test": "npx playwright test --config tests/playwright/playwright.config.js",
+    "test:ui": "npx playwright test --config tests/playwright/playwright.config.js --ui"
   },
   "devDependencies": {
     "@playwright/test": "^1.44.0",

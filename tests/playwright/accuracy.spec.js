@@ -7,7 +7,9 @@ test('speed accuracy: sim flow completes and shows a reading', async ({ page }) 
   test.setTimeout(90_000);
   await page.goto('/');
 
-  await page.locator('#sim-badge').tap();
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
   await page.locator('#measure-btn').tap();
   await expect(page.locator('#tracking-screen')).toBeVisible();
 

@@ -34,22 +34,24 @@ test('showScreen() switches screens', async ({ page }) => {
   await expect(page.locator('#capture-screen')).toBeHidden();
 });
 
-test('mode badge toggles SIDE / FRONT on tap', async ({ page }) => {
+test('settings: mode toggle switches SIDE / FRONT', async ({ page }) => {
   await page.goto('/');
-  const badge = page.locator('#mode-badge');
-  await expect(badge).toHaveText('SIDE');
-  await badge.tap();
-  await expect(badge).toHaveText('FRONT');
-  await badge.tap();
-  await expect(badge).toHaveText('SIDE');
+  await page.locator('#settings-btn').tap();
+  await expect(page.locator('#settings-modal')).toBeVisible();
+  await expect(page.locator('#mode-side')).toHaveClass(/active/);
+  await page.locator('#mode-front').tap();
+  await expect(page.locator('#mode-front')).toHaveClass(/active/);
+  await expect(page.locator('#mode-side')).not.toHaveClass(/active/);
+  await page.locator('#mode-side').tap();
+  await expect(page.locator('#mode-side')).toHaveClass(/active/);
 });
 
-test('sim badge toggles SIM OFF / SIM ON on tap', async ({ page }) => {
+test('settings: sim toggle switches ON / OFF', async ({ page }) => {
   await page.goto('/');
-  const badge = page.locator('#sim-badge');
-  await expect(badge).toHaveText('SIM OFF');
-  await badge.tap();
-  await expect(badge).toHaveText('SIM ON');
+  await page.locator('#settings-btn').tap();
+  await expect(page.locator('#sim-toggle')).toHaveAttribute('data-on', 'false');
+  await page.locator('#sim-toggle').tap();
+  await expect(page.locator('#sim-toggle')).toHaveAttribute('data-on', 'true');
 });
 
 test('rollingMedian returns median of last N values', async ({ page }) => {
@@ -146,9 +148,10 @@ test('Tracker returns null when no detections', async ({ page }) => {
 test('sim canvas becomes visible when SIM ON', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('#sim-canvas')).toBeHidden();
-  await page.locator('#sim-badge').tap();
-  await expect(page.locator('#sim-badge')).toHaveText('SIM ON');
-  await expect(page.locator('#sim-badge')).toHaveAttribute('data-sim', 'on');
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
+  await expect(page.locator('#sim-canvas')).toBeVisible();
 });
 
 test('result screen shows speed number', async ({ page }) => {
@@ -183,7 +186,9 @@ test('NEW button returns to capture screen', async ({ page }) => {
 
 test('STOP button commits speed and shows result', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#sim-badge').tap();
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
   await page.locator('#measure-btn').tap();
   await expect(page.locator('#tracking-screen')).toBeVisible();
   await page.waitForTimeout(3000);
@@ -193,7 +198,9 @@ test('STOP button commits speed and shows result', async ({ page }) => {
 
 test('full sim flow: capture → tracking → stop → result shows a number', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#sim-badge').tap();
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
   await page.locator('#measure-btn').tap();
   await expect(page.locator('#tracking-screen')).toBeVisible();
   await page.waitForTimeout(3000);
@@ -206,14 +213,18 @@ test('full sim flow: capture → tracking → stop → result shows a number', a
 
 test('SIM ON shows sim canvas, hides video', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#sim-badge').tap();
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
   await expect(page.locator('#sim-canvas')).toBeVisible();
   await expect(page.locator('#camera-video')).toBeHidden();
 });
 
 test('MEASURE SPEED button navigates to tracking screen', async ({ page }) => {
   await page.goto('/');
-  await page.locator('#sim-badge').tap();
+  await page.locator('#settings-btn').tap();
+  await page.locator('#sim-toggle').tap();
+  await page.locator('#settings-close').tap();
   await page.locator('#measure-btn').tap();
   await expect(page.locator('#tracking-screen')).toBeVisible();
   await expect(page.locator('#capture-screen')).toBeHidden();
