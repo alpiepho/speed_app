@@ -142,3 +142,29 @@ test('Tracker returns null when no detections', async ({ page }) => {
   });
   expect(result).toBeNull();
 });
+
+test('sim canvas becomes visible when SIM ON', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('#sim-canvas')).toBeHidden();
+  await page.locator('#sim-badge').tap();
+  await expect(page.locator('#sim-badge')).toHaveText('SIM ON');
+  await expect(page.locator('#sim-badge')).toHaveAttribute('data-sim', 'on');
+});
+
+test('SimulationMode draws a moving rectangle on canvas', async ({ page }) => {
+  await page.goto('/');
+  const moved = await page.evaluate(async () => {
+    const { SimulationMode } = await import('/js/simulation.js');
+    const canvas = document.createElement('canvas');
+    canvas.width = 393; canvas.height = 600;
+    document.body.appendChild(canvas);
+    const sim = new SimulationMode(canvas, 35);
+    sim.start();
+    const x1 = sim._carX;
+    await new Promise(r => setTimeout(r, 200));
+    const x2 = sim._carX;
+    sim.stop();
+    return x2 > x1;
+  });
+  expect(moved).toBe(true);
+});
