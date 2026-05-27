@@ -4,6 +4,9 @@ import { Detector } from './detector.js';
 import { Tracker } from './tracker.js';
 import { SpeedCalculator } from './speed.js';
 
+const APP_VERSION = 'v0.1.0';
+const APP_URL = 'https://alpiepho.github.io/speed_app/';
+
 export function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => {
     const on = s.id === id;
@@ -29,36 +32,58 @@ function setSimVisible(on) {
   document.getElementById('camera-video').classList.toggle('hidden', on);
 }
 
+function openSettings() {
+  document.getElementById('settings-modal').classList.remove('hidden');
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.add('hidden');
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.getElementById('mode-side').classList.toggle('active', mode === 'side');
+  document.getElementById('mode-front').classList.toggle('active', mode === 'front');
+}
+
+function toggleSim() {
+  state.simOn = !state.simOn;
+  document.getElementById('sim-toggle').dataset.on = state.simOn;
+  setSimVisible(state.simOn);
+  if (state.simOn) {
+    const canvas = document.getElementById('sim-canvas');
+    canvas.width = 393; canvas.height = 600;
+    state.sim = new SimulationMode(canvas, 35, state.mode);
+    state.sim.start();
+  } else if (state.sim) {
+    state.sim.stop();
+    state.sim = null;
+  }
+}
+
+function copyUrl() {
+  navigator.clipboard.writeText(APP_URL).then(() => {
+    const btn = document.getElementById('copy-url-btn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+  }).catch(() => {});
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   showScreen('capture-screen');
 
   // Pre-load model in background
   state.detector.load().catch(() => {});
 
-  const modeBadge = document.getElementById('mode-badge');
-  modeBadge.addEventListener('click', () => {
-    state.mode = state.mode === 'side' ? 'front' : 'side';
-    modeBadge.textContent = state.mode === 'side' ? 'SIDE' : 'FRONT';
-    modeBadge.dataset.mode = state.mode;
-  });
+  document.getElementById('app-version').textContent = APP_VERSION;
 
-  const simBadge = document.getElementById('sim-badge');
-  simBadge.addEventListener('click', () => {
-    state.simOn = !state.simOn;
-    simBadge.textContent = state.simOn ? 'SIM ON' : 'SIM OFF';
-    simBadge.dataset.sim = state.simOn ? 'on' : 'off';
-    setSimVisible(state.simOn);
-
-    if (state.simOn) {
-      const canvas = document.getElementById('sim-canvas');
-      canvas.width = 393; canvas.height = 600;
-      state.sim = new SimulationMode(canvas, 35, state.mode);
-      state.sim.start();
-    } else if (state.sim) {
-      state.sim.stop();
-      state.sim = null;
-    }
-  });
+  document.getElementById('settings-btn').addEventListener('click', openSettings);
+  document.getElementById('settings-close').addEventListener('click', closeSettings);
+  document.getElementById('settings-scrim').addEventListener('click', closeSettings);
+  document.getElementById('mode-side').addEventListener('click', () => setMode('side'));
+  document.getElementById('mode-front').addEventListener('click', () => setMode('front'));
+  document.getElementById('sim-toggle').addEventListener('click', toggleSim);
+  document.getElementById('copy-url-btn').addEventListener('click', copyUrl);
 
   document.getElementById('measure-btn').addEventListener('click', startMeasuring);
   document.getElementById('stop-btn').addEventListener('click', stopMeasuring);
