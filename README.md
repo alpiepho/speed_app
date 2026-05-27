@@ -2,6 +2,8 @@
 
 A PWA that uses your phone camera and on-device ML to measure the speed of passing or approaching cars. No server required — everything runs locally after the first load.
 
+**Live app:** https://alpiepho.github.io/speed_app/
+
 ## Features
 
 - **Side mode** — car passes left to right; tracks horizontal motion across frames
