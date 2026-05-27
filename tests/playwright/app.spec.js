@@ -51,3 +51,51 @@ test('sim badge toggles SIM OFF / SIM ON on tap', async ({ page }) => {
   await badge.tap();
   await expect(badge).toHaveText('SIM ON');
 });
+
+test('rollingMedian returns median of last N values', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { rollingMedian } = await import('/js/speed.js');
+    return rollingMedian([10, 50, 30, 20, 40], 5);
+  });
+  expect(result).toBe(30);
+});
+
+test('rollingMedian uses only last N values', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { rollingMedian } = await import('/js/speed.js');
+    return rollingMedian([999, 999, 10, 20, 30], 3);
+  });
+  expect(result).toBe(20);
+});
+
+test('calcSideSpeed converts pixel velocity to mph', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { calcSideSpeed } = await import('/js/speed.js');
+    return calcSideSpeed(
+      { x: 220, y: 200, width: 80, height: 50 },
+      { x: 100, y: 200, width: 80, height: 50 },
+      0.1,
+      800
+    );
+  });
+  expect(result).toBeGreaterThan(55);
+  expect(result).toBeLessThan(66);
+});
+
+test('calcFrontSpeed converts size growth to mph', async ({ page }) => {
+  await page.goto('/');
+  const result = await page.evaluate(async () => {
+    const { calcFrontSpeed } = await import('/js/speed.js');
+    return calcFrontSpeed(
+      { x: 150, y: 180, width: 90, height: 60 },
+      { x: 160, y: 190, width: 75, height: 50 },
+      0.1,
+      800
+    );
+  });
+  expect(result).toBeGreaterThan(80);
+  expect(result).toBeLessThan(100);
+});
