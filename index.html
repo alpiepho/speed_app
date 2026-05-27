@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>SpeedApp</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/result.css">
+</head>
+<body>
+
+  <!-- Screen 1: Capture -->
+  <div id="capture-screen" class="screen active">
+    <div id="viewfinder">
+      <video id="camera-video" autoplay playsinline muted></video>
+      <canvas id="sim-canvas" class="hidden"></canvas>
+      <canvas id="capture-overlay"></canvas>
+      <div id="mode-badge" data-mode="side">SIDE</div>
+      <div id="sim-badge" data-sim="off">SIM OFF</div>
+    </div>
+    <div id="capture-controls">
+      <button id="measure-btn">&#9654; MEASURE SPEED</button>
+    </div>
+  </div>
+
+  <!-- Screen 2: Tracking -->
+  <div id="tracking-screen" class="screen hidden">
+    <div id="tracking-viewfinder">
+      <video id="tracking-video" autoplay playsinline muted></video>
+      <canvas id="tracking-sim-canvas" class="hidden"></canvas>
+      <canvas id="tracking-overlay"></canvas>
+      <div id="speed-estimate">-- mph</div>
+    </div>
+    <div id="tracking-controls">
+      <button id="stop-btn">&#9646; STOP</button>
+    </div>
+  </div>
+
+  <!-- Screen 3: Result -->
+  <div id="result-screen" class="screen hidden night">
+    <span id="speed-number">0</span>
+    <span id="mph-label">mph</span>
+    <button id="new-btn">&#10227; NEW</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.17.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

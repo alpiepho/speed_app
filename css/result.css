@@ -1,0 +1,36 @@
+#result-screen {
+  display: flex; align-items: center; justify-content: center;
+  position: relative; cursor: pointer; user-select: none;
+}
+
+#result-screen.night { background: #000; }
+#result-screen.day   { background: #fff; }
+
+#speed-number {
+  font-size: clamp(120px, 40vmax, 320px);
+  font-weight: 900;
+  font-family: 'Arial Black', Arial, sans-serif;
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+#result-screen.night #speed-number { color: #fff; }
+#result-screen.day   #speed-number { color: #000; }
+
+#mph-label {
+  position: absolute; bottom: 12px; right: 16px;
+  font-size: 13px; font-weight: 700; letter-spacing: 3px;
+}
+#result-screen.night #mph-label { color: #333; }
+#result-screen.day   #mph-label { color: #bbb; }
+
+#new-btn {
+  position: absolute; top: 10px; left: 12px;
+  background: transparent; border: none;
+  font-size: 13px; font-weight: 600; letter-spacing: 1px;
+  cursor: pointer; opacity: 0.35; padding: 6px 10px;
+  border-radius: 6px;
+}
+#new-btn:hover, #new-btn:active { opacity: 0.9; }
+#result-screen.night #new-btn { color: #fff; }
+#result-screen.day   #new-btn { color: #000; }
