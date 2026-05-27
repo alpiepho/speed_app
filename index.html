@@ -32,6 +32,7 @@
       <video id="tracking-video" autoplay playsinline muted></video>
       <canvas id="tracking-sim-canvas" class="hidden"></canvas>
       <canvas id="tracking-overlay"></canvas>
+      <div id="countdown"></div>
       <div id="speed-estimate">-- mph</div>
     </div>
     <div id="tracking-controls">
@@ -55,15 +56,15 @@
         <button id="settings-close">✕</button>
       </div>
       <div class="settings-row">
-        <span class="settings-label">MODE</span>
-        <div id="mode-toggle">
-          <button id="mode-side" class="active">SIDE</button>
-          <button id="mode-front">FRONT</button>
-        </div>
-      </div>
-      <div class="settings-row">
         <span class="settings-label">SIMULATION</span>
         <button id="sim-toggle" data-on="false"></button>
+      </div>
+      <div class="settings-row">
+        <span class="settings-label">DURATION</span>
+        <div id="duration-control">
+          <input type="range" id="duration-slider" min="3" max="15" step="1" value="5">
+          <span id="duration-label">5s</span>
+        </div>
       </div>
       <hr class="settings-divider">
       <div id="settings-about">

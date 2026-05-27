@@ -4,7 +4,7 @@ const { test, expect } = require('@playwright/test');
 // tracker → calculator pipeline (detector is bypassed in sim mode; known bbox
 // is fed directly so COCO-SSD's inability to classify cartoon shapes is moot).
 test('speed accuracy: sim flow completes and shows a reading', async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(30_000);
   await page.goto('/');
 
   await page.locator('#settings-btn').tap();
@@ -13,11 +13,8 @@ test('speed accuracy: sim flow completes and shows a reading', async ({ page }) 
   await page.locator('#measure-btn').tap();
   await expect(page.locator('#tracking-screen')).toBeVisible();
 
-  // Let sim run for 8 seconds (needs ≥5 samples for committed speed)
-  await page.waitForTimeout(8000);
-  await page.locator('#stop-btn').tap();
-
-  await expect(page.locator('#result-screen')).toBeVisible({ timeout: 5000 });
+  // Auto-stop fires after the default 5s countdown
+  await expect(page.locator('#result-screen')).toBeVisible({ timeout: 10000 });
   const text = await page.locator('#speed-number').textContent();
   const measured = parseInt(text);
 

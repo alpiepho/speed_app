@@ -34,17 +34,6 @@ test('showScreen() switches screens', async ({ page }) => {
   await expect(page.locator('#capture-screen')).toBeHidden();
 });
 
-test('settings: mode toggle switches SIDE / FRONT', async ({ page }) => {
-  await page.goto('/');
-  await page.locator('#settings-btn').tap();
-  await expect(page.locator('#settings-modal')).toBeVisible();
-  await expect(page.locator('#mode-side')).toHaveClass(/active/);
-  await page.locator('#mode-front').tap();
-  await expect(page.locator('#mode-front')).toHaveClass(/active/);
-  await expect(page.locator('#mode-side')).not.toHaveClass(/active/);
-  await page.locator('#mode-side').tap();
-  await expect(page.locator('#mode-side')).toHaveClass(/active/);
-});
 
 test('settings: sim toggle switches ON / OFF', async ({ page }) => {
   await page.goto('/');
@@ -87,20 +76,6 @@ test('calcSideSpeed converts pixel velocity to mph', async ({ page }) => {
   expect(result).toBeLessThan(66);
 });
 
-test('calcFrontSpeed converts size growth to mph', async ({ page }) => {
-  await page.goto('/');
-  const result = await page.evaluate(async () => {
-    const { calcFrontSpeed } = await import('/js/speed.js');
-    return calcFrontSpeed(
-      { x: 150, y: 180, width: 90, height: 60 },
-      { x: 160, y: 190, width: 75, height: 50 },
-      0.1,
-      800
-    );
-  });
-  expect(result).toBeGreaterThan(80);
-  expect(result).toBeLessThan(100);
-});
 
 test('iou returns 1.0 for identical boxes', async ({ page }) => {
   await page.goto('/');

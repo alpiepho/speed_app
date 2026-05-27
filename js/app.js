@@ -4,7 +4,7 @@ import { Detector } from './detector.js';
 import { Tracker } from './tracker.js';
 import { SpeedCalculator } from './speed.js';
 
-const APP_VERSION = 'v0.1.0';
+const APP_VERSION = 'v0.2.0';
 const APP_URL = 'https://alpiepho.github.io/speed_app/';
 
 export function showScreen(id) {
@@ -17,8 +17,9 @@ export function showScreen(id) {
 window._showScreen = showScreen;
 
 const state = {
-  mode: 'side',
   simOn: false,
+  duration: parseInt(localStorage.getItem('duration') || '5', 10),
+  measureStart: null,
   camera: null,
   sim: null,
   detector: new Detector(),
@@ -40,12 +41,6 @@ function closeSettings() {
   document.getElementById('settings-modal').classList.add('hidden');
 }
 
-function setMode(mode) {
-  state.mode = mode;
-  document.getElementById('mode-side').classList.toggle('active', mode === 'side');
-  document.getElementById('mode-front').classList.toggle('active', mode === 'front');
-}
-
 function toggleSim() {
   state.simOn = !state.simOn;
   document.getElementById('sim-toggle').dataset.on = state.simOn;
@@ -53,7 +48,7 @@ function toggleSim() {
   if (state.simOn) {
     const canvas = document.getElementById('sim-canvas');
     canvas.width = 393; canvas.height = 600;
-    state.sim = new SimulationMode(canvas, 35, state.mode);
+    state.sim = new SimulationMode(canvas, 35);
     state.sim.start();
   } else if (state.sim) {
     state.sim.stop();
@@ -72,16 +67,22 @@ function copyUrl() {
 document.addEventListener('DOMContentLoaded', async () => {
   showScreen('capture-screen');
 
-  // Pre-load model in background
   state.detector.load().catch(() => {});
 
   document.getElementById('app-version').textContent = APP_VERSION;
 
+  const slider = document.getElementById('duration-slider');
+  slider.value = state.duration;
+  document.getElementById('duration-label').textContent = state.duration + 's';
+  slider.addEventListener('input', () => {
+    state.duration = parseInt(slider.value, 10);
+    document.getElementById('duration-label').textContent = state.duration + 's';
+    localStorage.setItem('duration', state.duration);
+  });
+
   document.getElementById('settings-btn').addEventListener('click', openSettings);
   document.getElementById('settings-close').addEventListener('click', closeSettings);
   document.getElementById('settings-scrim').addEventListener('click', closeSettings);
-  document.getElementById('mode-side').addEventListener('click', () => setMode('side'));
-  document.getElementById('mode-front').addEventListener('click', () => setMode('front'));
   document.getElementById('sim-toggle').addEventListener('click', toggleSim);
   document.getElementById('copy-url-btn').addEventListener('click', copyUrl);
 
@@ -95,9 +96,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 async function startMeasuring() {
-  state.sim?.stop();   // stop capture-screen sim before creating tracking-screen sim
+  state.sim?.stop();
   state.tracker.reset();
-  state.calculator = new SpeedCalculator(state.mode);
+  state.calculator = new SpeedCalculator();
+  state.measureStart = null;
 
   if (!state.simOn) {
     state.camera = new CameraManager(document.getElementById('tracking-video'));
@@ -111,7 +113,7 @@ async function startMeasuring() {
     simCanvas.classList.remove('hidden');
     document.getElementById('tracking-video').classList.add('hidden');
     simCanvas.width = 393; simCanvas.height = 600;
-    state.sim = new SimulationMode(simCanvas, 35, state.mode);
+    state.sim = new SimulationMode(simCanvas, 35);
     state.sim.start();
   }
 
@@ -119,11 +121,21 @@ async function startMeasuring() {
 }
 
 async function measureFrame(timestamp) {
+  if (state.measureStart === null) state.measureStart = timestamp;
+
+  const elapsed = (timestamp - state.measureStart) / 1000;
+
+  if (elapsed >= state.duration) {
+    document.getElementById('countdown').textContent = '';
+    stopMeasuring();
+    return;
+  }
+
+  document.getElementById('countdown').textContent = Math.ceil(state.duration - elapsed);
+
   const src = state.simOn ? state.sim?.getCanvas() : state.camera?.getCanvas();
   if (!src) { state.measureLoop = requestAnimationFrame(measureFrame); return; }
 
-  // In sim mode the canvas has a cartoon rectangle COCO-SSD won't recognise;
-  // feed the known car bbox directly so the tracker/calculator still run.
   const detections = state.simOn && state.sim
     ? [{ bbox: state.sim.getCarBbox(), class: 'car', score: 1.0 }]
     : await state.detector.detect(src);
@@ -159,6 +171,7 @@ function drawOverlay(canvas, src, locked) {
 
 function stopMeasuring() {
   if (state.measureLoop) cancelAnimationFrame(state.measureLoop);
+  document.getElementById('countdown').textContent = '';
   const committed = state.calculator?.getCommittedSpeed();
   showResult(committed ?? 0);
 }
@@ -193,7 +206,9 @@ function resetToCapture() {
   state.camera?.stop(); state.camera = null;
   state.tracker.reset();
   state.calculator?.reset();
+  state.measureStart = null;
 
+  document.getElementById('countdown').textContent = '';
   const tsc = document.getElementById('tracking-sim-canvas');
   tsc.classList.add('hidden');
   document.getElementById('tracking-video').classList.remove('hidden');

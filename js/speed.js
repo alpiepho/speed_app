@@ -1,11 +1,7 @@
-const CAR_WIDTH_M  = 1.8;
-const CAR_HEIGHT_M = 1.5;
-const MS_TO_MPH    = 2.23694;
+const CAR_WIDTH_M = 1.8;
+const MS_TO_MPH   = 2.23694;
 
 export function estimateFocalLength() {
-  // Approximate focal length in pixels for an iPhone camera at default zoom.
-  // iPhone sensor: ~4.2mm focal length, ~1.4µm pixel pitch at 12MP on 1/1.7" sensor
-  // Effective focalPx ≈ 800 at logical 393px-wide viewport (empirical baseline)
   return 800;
 }
 
@@ -14,14 +10,6 @@ export function calcSideSpeed(bbox, prevBbox, dt, focalPx) {
   const pixelsPerSec = Math.abs(dx) / dt;
   const dist_m = (CAR_WIDTH_M * focalPx) / bbox.width;
   const speed_ms = (pixelsPerSec * dist_m) / focalPx;
-  return speed_ms * MS_TO_MPH;
-}
-
-export function calcFrontSpeed(bbox, prevBbox, dt, focalPx) {
-  const dist1 = (CAR_HEIGHT_M * focalPx) / bbox.height;
-  const dist2 = (CAR_HEIGHT_M * focalPx) / prevBbox.height;
-  const deltaDist = Math.abs(dist1 - dist2);
-  const speed_ms = deltaDist / dt;
   return speed_ms * MS_TO_MPH;
 }
 
@@ -35,8 +23,7 @@ export function rollingMedian(values, window) {
 }
 
 export class SpeedCalculator {
-  constructor(mode, focalPx = estimateFocalLength()) {
-    this.mode = mode;
+  constructor(focalPx = estimateFocalLength()) {
     this.focalPx = focalPx;
     this.prevBbox = null;
     this.prevTime = null;
@@ -52,9 +39,7 @@ export class SpeedCalculator {
     const dt = (timestamp - this.prevTime) / 1000;
     if (dt <= 0) return null;
 
-    const mph = this.mode === 'side'
-      ? calcSideSpeed(bbox, this.prevBbox, dt, this.focalPx)
-      : calcFrontSpeed(bbox, this.prevBbox, dt, this.focalPx);
+    const mph = calcSideSpeed(bbox, this.prevBbox, dt, this.focalPx);
 
     this.prevBbox = bbox;
     this.prevTime = timestamp;
