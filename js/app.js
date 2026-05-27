@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (state.simOn) {
       const canvas = document.getElementById('sim-canvas');
       canvas.width = 393; canvas.height = 600;
-      state.sim = new SimulationMode(canvas, 35);
+      state.sim = new SimulationMode(canvas, 35, state.mode);
       state.sim.start();
     } else if (state.sim) {
       state.sim.stop();
@@ -86,7 +86,7 @@ async function startMeasuring() {
     simCanvas.classList.remove('hidden');
     document.getElementById('tracking-video').classList.add('hidden');
     simCanvas.width = 393; simCanvas.height = 600;
-    state.sim = new SimulationMode(simCanvas, 35);
+    state.sim = new SimulationMode(simCanvas, 35, state.mode);
     state.sim.start();
   }
 
@@ -97,7 +97,12 @@ async function measureFrame(timestamp) {
   const src = state.simOn ? state.sim?.getCanvas() : state.camera?.getCanvas();
   if (!src) { state.measureLoop = requestAnimationFrame(measureFrame); return; }
 
-  const detections = await state.detector.detect(src);
+  // In sim mode the canvas has a cartoon rectangle COCO-SSD won't recognise;
+  // feed the known car bbox directly so the tracker/calculator still run.
+  const detections = state.simOn && state.sim
+    ? [{ bbox: state.sim.getCarBbox(), class: 'car', score: 1.0 }]
+    : await state.detector.detect(src);
+
   const locked = state.tracker.update(detections);
   drawOverlay(document.getElementById('tracking-overlay'), src, locked);
 

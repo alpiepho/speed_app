@@ -1,4 +1,4 @@
-const CACHE = 'speedapp-v1';
+const CACHE = 'speedapp-v3';
 const PRECACHE = [
   '/',
   '/index.html',

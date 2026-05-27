@@ -1,3 +1,6 @@
 node_modules/
 .superpowers/
 *.pem
+test-results/
+.playwright-mcp/
+*.png
