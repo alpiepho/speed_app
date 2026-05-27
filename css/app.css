@@ -52,3 +52,7 @@ html, body {
   color: #f59e0b; text-shadow: 0 0 12px rgba(245,158,11,0.5);
   z-index: 10;
 }
+
+#tracking-overlay { z-index: 5; }
+#tracking-sim-canvas { z-index: 2; }
+#tracking-video { z-index: 1; }
